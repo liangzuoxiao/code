@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bjpowernode.crm.workbench.dao.CustomerDao">
+    <delete id="deleteCustomerByIds" >
+        delete from tbl_customer
+        where id in
+        <foreach collection="array" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+    <update id="updateCustomer" >
+        update tbl_customer set
+        owner=#{owner},
+        name=#{name},
+        website=#{website},
+        phone=#{phone},
+        editBy=#{editBy},
+        editTime=#{editTime},
+        contactSummary=#{contactSummary},
+        nextContactTime=#{nextContactTime},
+        description=#{description},
+        address=#{address}
+        where id=#{id}
+    </update>
+
+    <select id="selectCustomerById" resultType="Customer">
+      select c.id,u1.name as owner,c.name,c.website,c.phone,c.contactSummary,c.nextContactTime,c.description,c.address, u2.name as createBy,c.createTime,c.editTime,u3.name as editBy
+      from tbl_customer c
+      join tbl_user u1 on c.owner=u1.id
+      join tbl_user u2 on c.createBy=u2.id
+      join tbl_user u3 on c.editBy=u3.id
+
+      where c.id=#{id}
+    </select>
+
+    <select id="getTotalByCondtion" resultType="int">
+        select count(*)
+        from tbl_customer c
+        join tbl_user u on c.owner=u.id
+
+        <where>
+            <if test="c.name!=null and c.name!=''">
+                c.name like '%' #{c.name} '%'
+            </if>
+            <if test="c.owner!=null and c.owner!=''">
+                u.name like '%' #{c.owner} '%'
+            </if>
+            <if test="c.phone!=null and c.phone!=''">
+                c.phone like '%' #{c.phone} '%'
+            </if>
+            <if test="c.website!=null and c.website!=''">
+                c.website like '%' #{c.website} '%'
+            </if>
+        </where>
+    </select>
+
+    <select id="getCustomerListByCondition" resultType="Customer">
+      select c.id,c.name,u.name as owner,c.phone,c.website
+      from tbl_customer c
+      join tbl_user u on c.owner=u.id
+
+      <where>
+          <if test="c.name!=null and c.name!=''">
+              c.name like '%' #{c.name} '%'
+          </if>
+          <if test="c.owner!=null and c.owner!=''">
+              u.name like '%' #{c.owner} '%'
+          </if>
+          <if test="c.phone!=null and c.phone!=''">
+              c.phone like '%' #{c.phone} '%'
+          </if>
+          <if test="c.website!=null and c.website!=''">
+              c.website like '%' #{c.website} '%'
+          </if>
+      </where>
+
+      order by c.createTime desc
+      limit #{skipCount},#{pageSize}
+    </select>
+
+    <insert id="insertCustomer" parameterType="Customer">
+    insert into tbl_customer(id,owner,name,website,phone,createBy,createTime,editBy,editTime,contactSummary,nextContactTime,description,address)
+    values (
+    #{id},#{owner},#{name},#{website},#{phone},#{createBy},#{createTime},#{editBy},#{editTime},#{contactSummary},#{nextContactTime},#{description},#{address}
+    )
+    </insert>
+
+    <select id="selectCustomerByName" resultType="Customer">
+        select id,name
+        from tbl_customer
+        where name like '%' #{name} '%'
+    </select>
+
+    <select id="getCustomerList" resultType="Customer">
+      select c.id,c.name,u.name as owner,c.phone,c.website
+      from tbl_customer c
+      join tbl_user u on c.owner=u.id
+    </select>
+</mapper>

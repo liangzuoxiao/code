@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bjpowernode.crm.workbench.dao.ClueRemarkDao">
+
+    <select id="selectClueRemarkByClueId" resultType="ClueRemark">
+        select * from tbl_clue_remark where clueId=#{clueId}
+    </select>
+    
+    <select id="selectClueRemarkForDetaByClueId" resultType="ClueRemark">
+      select cr.id,cr.noteContent,u1.name as createBy,cr.createTime,u2.name as editBy,cr.editTime,cr.editFlag
+      from  tbl_clue_remark cr
+      join tbl_user u1 on cr.createBy=u1.id
+      left join tbl_user u2 on cr.editBy=u2.id
+      where  cr.clueId=#{clueId}
+    </select>
+
+    <delete id="deleteClueRemarkByClueId">
+       delete from tbl_clue_remark where clueId=#{clueId}
+    </delete>
+</mapper>

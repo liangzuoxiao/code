@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bjpowernode.crm.workbench.dao.TransactionRemarkDao">
+    <insert id="insertTransactionRemarkByList">
+        insert into tbl_tran_remark(id,noteContent,createBy,createTime,editBy,editTime,editFlag,tranId)
+        values
+        <foreach collection="list" item="obj" separator=",">
+            (#{obj.id},#{obj.noteContent},#{obj.createBy},#{obj.createTime},#{obj.editBy},#{obj.editTime},#{obj.editFlag},#{obj.tranId})
+        </foreach>
+    </insert>
+
+    <select id="selectTransactionRemarkByTranId" resultType="TransactionRemark">
+        select tr.id,tr.noteContent,u1.name as createBy,tr.createTime,u2.name as editBy,tr.editTime,tr.editFlag
+        from tbl_tran_remark tr
+        join tbl_user u1 on tr.createBy=u1.id
+        left join tbl_user u2 on tr.editBy=u2.id
+        where tr.tranId=#{tranId}
+    </select>
+</mapper>

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bjpowernode.crm.workbench.dao.ClueDao">
+
+    <delete id="deleteClueByIds">
+        delete from tbl_clue
+        where id in
+        <foreach collection="array" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+    <update id="updateClueById">
+        update tbl_clue set
+
+        fullname=#{fullname},
+        appellation=#{appellation},
+        owner=#{owner},
+        job=#{job},
+        email=#{email},
+        phone=#{phone},
+        website=#{website},
+        mphone=#{mphone},
+        state=#{state},
+        source=#{source},
+        editBy=#{editBy},
+        editTime=#{editTime},
+        description=#{description},
+        contactSummary=#{contactSummary},
+        nextContactTime=#{nextContactTime},
+        address=#{address}
+
+
+        where id=#{id}
+    </update>
+    <select id="selectToUpdateClueById" resultType="Clue">
+        select * from tbl_clue where id=#{id}
+    </select>
+
+    <select id="getTotalByCondition" resultType="int" parameterType="map">
+        select count(*)
+        from tbl_clue c
+        left join tbl_dic_value dv1 on c.source=dv1.id
+        join tbl_user u1 on c.owner=u1.id
+        left join tbl_dic_value dv2 on c.state=dv2.id
+        left join tbl_dic_value dv3 on c.appellation=dv3.id
+
+        <where>
+            <if test="clue.fullname!=null and clue.fullname!=''">
+                c.fullname like '%' #{clue.fullname} '%'
+            </if>
+            <if test="clue.company!=null and clue.company!=''">
+                and c.company like '%' #{clue.company} '%'
+            </if>
+            <if test="clue.phone!=null and clue.phone!=''">
+                and c.phone like '%' #{clue.phone} '%'
+            </if>
+            <if test="clue.source!=null and clue.source!=''">
+                and dv1.value like '%' #{clue.source} '%'
+            </if>
+            <if test="clue.owner!=null and clue.owner!=''">
+                and du1.name like '%' #{clue.owner} '%'
+            </if>
+            <if test="clue.mphone!=null and clue.mphone!=''">
+                and c.mphone like '%' #{clue.mphone} '%'
+            </if>
+            <if test="clue.state!=null and clue.state!=''">
+                and dv2.value like '%' #{clue.state} '%'
+            </if>
+        </where>
+
+
+
+    </select>
+
+    <select id="getClueListByCondition" resultType="Clue" parameterType="map">
+        select
+        c.id,
+        c.fullname,
+        c.company,
+        c.phone,
+        dv1.value as source,
+        du1.name as owner,
+        c.mphone,
+        dv2.value as state,
+        dv3.value as appellation
+
+        from tbl_clue c
+        left join tbl_dic_value dv1 on c.source=dv1.id
+        join tbl_user du1 on c.owner=du1.id
+        left join tbl_dic_value dv2 on c.state=dv2.id
+        left join tbl_dic_value dv3 on c.appellation=dv3.id
+
+        <where>
+            <if test="clue.fullname!=null and clue.fullname!=''">
+                c.fullname like '%' #{clue.fullname} '%'
+            </if>
+            <if test="clue.company!=null and clue.company!=''">
+                and c.company like '%' #{clue.company} '%'
+            </if>
+            <if test="clue.phone!=null and clue.phone!=''">
+                and c.phone like '%' #{clue.phone} '%'
+            </if>
+            <if test="clue.source!=null and clue.source!=''">
+                and dv1.value like '%' #{clue.source} '%'
+            </if>
+            <if test="clue.owner!=null and clue.owner!=''">
+                and du1.name like '%' #{clue.owner} '%'
+            </if>
+            <if test="clue.mphone!=null and clue.mphone!=''">
+                and c.mphone like '%' #{clue.mphone} '%'
+            </if>
+            <if test="clue.state!=null and clue.state!=''">
+                and dv2.value like '%' #{clue.state} '%'
+            </if>
+        </where>
+        order by c.createTime desc
+        limit #{skipCount},#{pageSize}
+
+    </select>
+
+    <delete id="deleteClueById">
+        delete from tbl_clue where id=#{id}
+    </delete>
+
+    <select id="selectClueById" resultType="Clue">
+        select * from tbl_clue where id=#{id}
+    </select>
+
+    <insert id="insertClue" parameterType="Clue">
+
+        insert into tbl_clue(id,fullname,appellation,owner,company,job,email,phone,website,mphone,state,source,createBy,createTime,description,contactSummary,nextContactTime,address)
+        values (#{id},#{fullname},#{appellation},#{owner},#{company},#{job},#{email},#{phone},#{website},#{mphone},#{state},#{source},#{createBy},#{createTime},#{description},#{contactSummary},#{nextContactTime},#{address})
+    </insert>
+
+    <select id="selectClueForDetailById" parameterType="String" resultType="Clue">
+        select c.id,c.fullname,dv.value as appellation,u.name as owner,c.company,c.job,c.email,c.phone,c.website,c.mphone,dv2.value as state,dv3.value as source,u2.name as createBy,c.createTime,c.description,c.contactSummary,c.nextContactTime,c.address
+        from tbl_clue c
+        left join tbl_dic_value dv on c.appellation= dv.id
+        join tbl_user u on c.owner= u.id
+        left join tbl_dic_value dv2 on c.state= dv2.id
+        left join tbl_dic_value dv3 on c.source= dv3.id
+        join tbl_user u2 on c.createBy=u2.id
+        left join tbl_user u3 on c.editBy=u3.id
+        where c.id=#{id}
+    </select>
+</mapper>

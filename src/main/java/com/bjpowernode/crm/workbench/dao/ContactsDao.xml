@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bjpowernode.crm.workbench.dao.ContactsDao">
+
+    <delete id="deleteContactsById" >
+        delete from tbl_contacts where id=#{id}
+    </delete>
+
+    <select id="selectContactsListByCustomerId" resultType="Contacts">
+    select co.id,co.fullname,co.email,co.mphone
+    from tbl_contacts co
+    join tbl_customer cu on co.customerId=cu.id
+    where co.customerId=#{id}
+    </select>
+
+    <insert id="insertContacts" parameterType="Contacts">
+        insert into tbl_contacts(id,owner,source,customerId,fullname,appellation,email,mphone,job,createBy,createTime,editBy,editTime,description,contactSummary,nextContactTime,address)
+
+        values (#{id},#{owner},#{source},#{customerId},#{fullname},#{appellation},#{email},#{mphone},#{job},#{createBy},#{createTime},#{editBy},#{editTime},#{description},#{contactSummary},#{nextContactTime},#{address})
+    </insert>
+
+
+</mapper>

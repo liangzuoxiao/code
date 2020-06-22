@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bjpowernode.crm.workbench.dao.ActivityRemarkDao">
+
+    <delete id="deltetActivityRemarkById" >
+        delete from tbl_activity_remark
+        where id=#{id}
+    </delete>
+    
+    <update id="updateActivityRemark" parameterType="ActivityRemark">
+        update tbl_activity_remark
+        set noteContent=#{noteContent},editFlag=#{editFlag},editTime=#{editTime},editBy=#{editBy}
+        where id=#{id}
+    </update>
+
+    <insert id="insertActivityRemark">
+
+        insert into tbl_activity_remark(id,noteContent,createTime,createBy,editFlag,activityId)
+        values (#{id},#{noteContent},#{createTime},#{createBy},#{editFlag},#{activityId})
+    </insert>
+    
+    <select id="selectActivityRemarkByActivityId" resultType="ActivityRemark">
+
+        select ar.id,ar.noteContent,ar.createTime,u1.name as createBy,ar.editTime,u2.name as editBy,ar.editFlag
+        from tbl_activity_remark ar
+        left join tbl_user u1 on ar.createBy=u1.id
+        left join tbl_user u2 on ar.editBy=u2.id
+        where ar.activityId=#{activityId}
+    </select>
+
+    <delete id="deleteByActivityids">
+
+      delete from tbl_activity_remark
+
+      where activityid in
+
+      <foreach collection="array" item="aid" open="(" close=")" separator="">
+        #{aid}
+      </foreach>
+    </delete>
+</mapper>

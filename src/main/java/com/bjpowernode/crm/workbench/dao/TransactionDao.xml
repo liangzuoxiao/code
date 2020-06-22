@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bjpowernode.crm.workbench.dao.TransactionDao">
+
+    <delete id="deleteTransactionById">
+        delete from tbl_tran where id=#{id}
+    </delete>
+    <select id="selectTransactionListByCustomerId" resultType="Transaction">
+        select t.id,t.name,t.money,dv1.value as stage,t.expectedDate,dv2.value as type
+        from tbl_tran t
+        join tbl_dic_value dv1 on t.stage=dv1.id
+        left join tbl_dic_value dv2 on t.type=dv2.id
+        join tbl_customer cu on t.customerId=cu.id
+
+        where t.customerId=#{id}
+    </select>
+
+    <insert id="insertTransaction" >
+        insert into tbl_tran(id,owner,money,name,expectedDate,customerId,stage,type,source,activityId,contactsId,createBy,createTime,editBy,editTime,description,contactSummary,nextContactTime)
+        values(#{id},#{owner},#{money},#{name},#{expectedDate},#{customerId},#{stage},#{type},#{source},#{activityId},#{contactsId},#{createBy},#{createTime},#{editBy},#{editTime},#{description},#{contactSummary},#{nextContactTime})
+    </insert>
+    
+    <select id="selectTransationById" resultType="Transaction">
+        select * from tbl_tran where id=#{id}
+    </select>
+    
+    <select id="selectTransactionForDetaById" resultType="Transaction">
+        select t.id,u1.name as owner,t.money,t.name,t.expectedDate,c1.name as customerId,dv1.value as stage,dv2.value as type,dv3.value as source,a.name as activityId,co.fullname as contactsId,u2.name as createBy,t.createTime,u3.name as editBy,t.editTime,t.description,dv1.orderNo as orderNo
+        from tbl_tran t
+        join tbl_user u1 on t.owner=u1.id
+        join tbl_customer c1 on t.customerId=c1.id
+        join tbl_dic_value dv1 on t.stage=dv1.id
+        left join tbl_dic_value dv2 on t.type=dv2.id
+        left join tbl_dic_value dv3 on t.source=dv2.id
+        left join tbl_activity a on t.activityId=a.id
+        left join tbl_contacts co on t.contactsId=co.id
+        join tbl_user u2 on t.createBy=u2.id
+        left join tbl_user u3 on t.editBy=u3.id
+        where t.id=#{id}
+    </select>
+
+    <update id="updateTransactionStage" >
+        update tbl_tran
+        set stage=#{stage},editBy=#{editBy},editTime=#{editTime}
+        where id=#{id}
+    </update>
+
+    <select id="selectCountOfTransactionGroupByStage" resultType="FunneIVO">
+        select count(*) as value,max(dv.value) as name
+        from tbl_tran t
+        join tbl_dic_value dv on t.stage=dv.id
+        group by t.stage
+    </select>
+</mapper>
